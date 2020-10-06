@@ -1,6 +1,6 @@
 const path = require('path');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
-var HtmlWebpackPlugin = require('html-webpack-plugin');
+const HTMLWebpackPlugin = require('html-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
@@ -14,19 +14,20 @@ const jsLoaders = () => {
         {
             loader: "babel-loader",
             options: {
-              presets: ['@babel/preset-env']
+                presets: ['@babel/preset-env'],
             }
         }
-    ]
-    if(isDev) {
+    ];
+
+    if (isDev) {
         loaders.push('eslint-loader');
     }
-    return loaders
+    return loaders;
 }
 
 module.exports = {
     context: path.resolve(__dirname, 'src'),
-    mode: 'development',
+    mode: "development",
     entry: ['@babel/polyfill', './index.js'],
     output: {
         filename: filename('js'),
@@ -46,44 +47,40 @@ module.exports = {
     },
     plugins: [
         new CleanWebpackPlugin(),
-        new HtmlWebpackPlugin({
+        new HTMLWebpackPlugin({
             template: 'index.html',
             minify: {
                 removeComments: isProd,
                 collapseWhitespace: isProd
             }
         }),
-        new CopyPlugin({ 
-            patterns: [{
-                from: path.resolve(__dirname, 'src/favicon.ico'),
-                to: path.resolve(__dirname, 'dist')
-            }]
+        new CopyPlugin({
+            patterns: [
+                {
+                    from: path.resolve(__dirname, 'src/favicon.ico'),
+                    to: path.resolve(__dirname, 'dist')
+                }
+            ],
         }),
         new MiniCssExtractPlugin({
-            filename: filename('css')
+            filename: filename('css'),
         })
     ],
     module: {
         rules: [
             {
-              test: /\.s[ac]ss$/i,
-              use: [
-                {
-                    loader: MiniCssExtractPlugin.loader,
-                    options: {
-                        hmr: isDev,
-                        reloadAll: true,
-                    }
-                },
-                'css-loader',
-                'sass-loader',
-              ],
+                test: /\.s[ac]ss$/i,
+                use: [
+                    MiniCssExtractPlugin.loader,
+                    'css-loader',
+                    'sass-loader',
+                ],
             },
             {
-                test: /\.js$/,
+                test: /\.m?js$/,
                 exclude: /node_modules/,
                 use: jsLoaders()
-              }
-          ]
+            }
+        ],
     }
-}
+};
